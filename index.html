@@ -148,7 +148,6 @@
             display: flex; justify-content: space-between; width: 100%;
             background: #E0F2F1; padding: 10px 15px; border-radius: 15px;
             color: #00695C; font-weight: bold; margin-bottom: 10px; 
-            /* [修改 3] 將頂部間距加大，完美避開左上及右上方的按鈕 */
             margin-top: 75px; 
         }
 
@@ -193,6 +192,8 @@
             margin: 5px 0; 
             font-weight: bold;
         }
+
+        .pseudo-mode-container { display: none; flex-direction: column; align-items: center; width: 100%; }
 
         .playing { animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -368,7 +369,7 @@
                 <div id="word-puzzle" class="word-puzzle">_ _ _</div>
             </div>
 
-            <div id="pseudo-mode" class="picture-mode-container">
+            <div id="pseudo-mode" class="pseudo-mode-container">
                 <button class="sound-btn-big" id="speakerBtnPseudo" onclick="playGameSound()" style="background: linear-gradient(135deg, #4FC3F7, #0288D1); box-shadow: 0 8px 0 #0277BD;">
                     <span class="question-mark">🔊</span>
                 </button>
@@ -465,6 +466,10 @@
         let currentTargetSound = ""; 
         let currentPicData = null;   
 
+        // [新增] 聲音抽籤筒 (確保聲音平均出現)
+        let audioBagTask1 = [];
+        let audioBagTask2 = [];
+
         // Task 1 Data
         const task1InitialData = [
             { word: "apple", display: "_ p p l e", ans: "a", img: "task1/apple.jpg" },
@@ -472,7 +477,6 @@
             { word: "arm",   display: "_ r m",     ans: "a", img: "task1/arm.jpg" },
             { word: "ink",   display: "_ n k",     ans: "i", img: "task1/ink.jpg" },
             { word: "igloo", display: "_ g l o o", ans: "i", img: "task1/igloo.jpg" },
-            // [修改 1] 將 ice 替換為 it
             { word: "it",    display: "_ t",       ans: "i", img: "task1/it.jpg" }
         ];
         const task1MiddleData = [
@@ -483,7 +487,6 @@
             { word: "big",  display: "b _ g",   ans: "i", img: "task1/big.jpg" },
             { word: "bin",  display: "b _ n",   ans: "i", img: "task1/bin.jpg" }
         ];
-        // [修改 2] Task 1 Pseudo-words
         const task1PseudoData = [
             { word: "ark", display: "_ r k", ans: "a" },
             { word: "ipt", display: "_ p t", ans: "i" },
@@ -513,7 +516,6 @@
             { word: "corn",  display: "c o r _",   ans: "n", img: "task2/corn.jpg" },
             { word: "man",   display: "m a _",     ans: "n", img: "task2/man.jpg" }
         ];
-        // [修改 2] Task 2 Pseudo-words
         const task2PseudoData = [
             { word: "bim", display: "_ i m", ans: "b" },
             { word: "jab", display: "j a _", ans: "b" },
@@ -549,6 +551,11 @@
             q1Wrong = false;
             q2Wrong = false;
             nextPraiseThreshold = Math.floor(Math.random() * 2) + 3;
+            
+            // [修改] 準備暗箱抽籤 (確保數量平均分佈並洗牌)
+            audioBagTask1 = ['a','a','a','a','a', 'i','i','i','i','i'].sort(() => 0.5 - Math.random());
+            audioBagTask2 = ['b','b','b','b', 't','t','t','t', 'n','n','n','n'].sort(() => 0.5 - Math.random());
+
             hideAllScreens();
             document.getElementById('screen-cover').classList.remove('hidden');
         }
@@ -615,7 +622,6 @@
 
         function nextQuestion() {
             currentQuestionNum++;
-            // [修改 2] 更新總題數：加入 6 題 Pseudo 題
             const totalQs = (currentMission === 1) ? 28 : 33; 
             
             if (currentQuestionNum > totalQs) {
@@ -631,7 +637,6 @@
             const container = document.getElementById('choices-container');
             container.innerHTML = ""; 
 
-            // [修改 2] 加入無圖題 (PseudoQ) 邏輯分流
             if (currentMission === 1) {
                 if (currentQuestionNum <= 10) setupAudioQ_Task1(container);
                 else if (currentQuestionNum <= 16) setupPictureQ(container, initialQueue[currentQuestionNum-11], ['a','i']);
@@ -647,7 +652,8 @@
 
         function setupAudioQ_Task1(container) {
             setupAudioUI();
-            currentTargetSound = Math.random() < 0.5 ? 'a' : 'i';
+            // [修改] 從暗箱抽籤，取代原本的隨機
+            currentTargetSound = audioBagTask1.pop();
             player.src = "audio_overview/" + currentTargetSound + ".mp3";
             player.load();
 
@@ -667,8 +673,8 @@
 
         function setupAudioQ_Task2(container) {
             setupAudioUI();
-            const targets = ['b', 't', 'n'];
-            currentTargetSound = targets[Math.floor(Math.random() * targets.length)];
+            // [修改] 從暗箱抽籤，取代原本的隨機
+            currentTargetSound = audioBagTask2.pop();
             player.src = "audio_overview/" + currentTargetSound + ".mp3";
             player.load();
 
@@ -708,25 +714,23 @@
             createButtons(container, options, data.ans);
         }
 
-        // [修改 2] Task 1 無圖題專用選項邏輯
         function setupPseudoQ_Task1(container, data) {
             setupPseudoUI(data);
-            let options = ['a', 'i']; // 固定 a, i
+            let options = ['a', 'i']; 
             const pool = ['b', 'r', 's', 'd', 'v', 't'];
             const shuffled = pool.sort(() => 0.5 - Math.random());
-            options.push(shuffled[0]); // 隨機抽 1
-            options.push(shuffled[1]); // 隨機抽 2 (共 4 選項)
+            options.push(shuffled[0]); 
+            options.push(shuffled[1]); 
             options.sort(() => 0.5 - Math.random());
             createButtons(container, options, data.ans);
         }
 
-        // [修改 2] Task 2 無圖題專用選項邏輯
         function setupPseudoQ_Task2(container, data) {
             setupPseudoUI(data);
-            let options = ['b', 't', 'n']; // 固定 b, t, n
+            let options = ['b', 't', 'n']; 
             const pool = ['a', 'i', 'f', 'd', 'o'];
             const shuffled = pool.sort(() => 0.5 - Math.random());
-            options.push(shuffled[0]); // 隨機抽 1 (共 4 選項)
+            options.push(shuffled[0]); 
             options.sort(() => 0.5 - Math.random());
             createButtons(container, options, data.ans);
         }
@@ -752,12 +756,11 @@
             document.getElementById('word-puzzle').innerText = currentPicData.display;
         }
 
-        // [修改 2] 設置無圖題 UI
         function setupPseudoUI(data) {
             document.getElementById('audio-mode').style.display = 'none';
             document.getElementById('picture-mode').style.display = 'none';
             document.getElementById('pseudo-mode').style.display = 'flex';
-            currentPicData = data; // 共用變數以便播音
+            currentPicData = data; 
             document.getElementById('pseudo-word-puzzle').innerText = data.display;
         }
 
@@ -782,7 +785,6 @@
                 if(player.readyState === 0) player.load();
                 player.play().catch(e => {});
             } else {
-                // 圖片題 與 無圖題 都會去 audio_task 資料夾抓取
                 let folderName = "audio_task" + currentMission;
                 player.src = folderName + "/" + currentPicData.word + ".m4a";
                 player.play().catch(e => { console.log("Missing audio file: " + player.src); });
@@ -799,7 +801,6 @@
                 ticks++;
                 document.getElementById('tick-count').innerText = ticks;
 
-                // [修改 2] 更新畫面上正確的拼字 (包含無圖題)
                 if (document.getElementById('picture-mode').style.display !== 'none') {
                     const puzzle = document.getElementById('word-puzzle');
                     puzzle.innerText = puzzle.innerText.replace('_', choice);
