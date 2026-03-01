@@ -160,20 +160,21 @@
 
         .audio-mode-container { display: none; }
         .sound-btn-big {
-            width: 15vh; height: 15vh; max-width: 120px; max-height: 120px;
+            width: 12vh; height: 12vh; max-width: 100px; max-height: 100px; /* 縮小尺寸節省空間 */
             background: linear-gradient(135deg, #FF7043, #D84315);
             border-radius: 50%; border: none; box-shadow: 0 8px 0 #BF360C;
-            margin: 10px auto; display: flex; justify-content: center; align-items: center;
+            margin: 5px auto; /* 縮小上下邊距 */
+            display: flex; justify-content: center; align-items: center;
         }
         .sound-btn-big:active, .sound-btn-big.active-anim { box-shadow: 0 4px 0 #BF360C; }
         
-        .question-mark { font-size: clamp(3rem, 6vh, 4rem); color: white; font-weight: bold; }
+        .question-mark { font-size: clamp(2.5rem, 5vh, 3.5rem); color: white; font-weight: bold; } /* 稍縮小 */
 
         .picture-mode-container { display: none; flex-direction: column; align-items: center; width: 100%; }
         .pic-row { display: flex; justify-content: center; align-items: center; margin-bottom: 10px; }
         
         .game-img {
-            height: 15vh; 
+            height: 12vh;  /* 縮小圖片高度 */
             width: auto; max-width: 70%; object-fit: contain;
             border: 3px solid #ccc; border-radius: 15px; background-color: #fff;
         }
@@ -187,7 +188,7 @@
         .sound-btn-small:active, .sound-btn-small.active-anim { box-shadow: 0 2px 0 #F9A825; }
         
         .word-puzzle {
-            font-size: clamp(2.5rem, 5vh, 3.5rem); 
+            font-size: clamp(2.2rem, 4.5vh, 3rem); /* 稍微縮小字體 */
             letter-spacing: 5px; color: #333; 
             margin: 5px 0; 
             font-weight: bold;
@@ -199,33 +200,33 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         .choices-area {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; 
-            margin: 5px 0 10px 0; 
-            min-height: 80px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; /* 縮小選項間距 */
+            margin: 5px 0; /* 縮小上下邊距 */
+            min-height: 70px;
         }
         
         .choice-card {
             background: white; border: 3px solid #4DB6AC;
-            width: 10vh; height: 10vh; max-width: 90px; max-height: 90px;
-            border-radius: 15px;
-            font-size: clamp(2rem, 4vh, 3rem); color: #00796B;
+            width: 8.5vh; height: 8.5vh; max-width: 75px; max-height: 75px; /* 稍微縮細卡片，防兩行過高 */
+            border-radius: 12px;
+            font-size: clamp(1.8rem, 3.5vh, 2.5rem); color: #00796B;
             display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 5px 0 #00695C; 
+            box-shadow: 0 4px 0 #00695C; 
         }
         .choice-card:active, .choice-card.active-anim { box-shadow: 0 2px 0 #00695C; }
 
-        .correct-bg { background-color: #C8E6C9 !important; border-color: #4CAF50 !important; color: #2E7D32 !important; box-shadow: 0 5px 0 #2E7D32 !important; }
+        .correct-bg { background-color: #C8E6C9 !important; border-color: #4CAF50 !important; color: #2E7D32 !important; box-shadow: 0 4px 0 #2E7D32 !important; }
         .wrong-shake { animation: shake 0.4s; background-color: #FFCDD2 !important; border-color: #F44336 !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
         .feedback-area {
-            min-height: 80px; 
+            min-height: 60px; /* 縮小底部區域高度 */
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .next-btn {
@@ -384,7 +385,7 @@
                 <button class="sound-btn-big" id="speakerBtnPseudo" onclick="playGameSound()" style="background: linear-gradient(135deg, #4FC3F7, #0288D1); box-shadow: 0 8px 0 #0277BD;">
                     <span class="question-mark">🔊</span>
                 </button>
-                <div id="pseudo-word-puzzle" class="word-puzzle" style="margin-top: 25px; font-size: clamp(3rem, 6vh, 4rem);">_ _ _</div>
+                <div id="pseudo-word-puzzle" class="word-puzzle" style="margin-top: 10px; font-size: clamp(2.5rem, 5vh, 3.5rem);">_ _ _</div>
             </div>
         </div>
         
